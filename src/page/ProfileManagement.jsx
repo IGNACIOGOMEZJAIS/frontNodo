@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { toast } from 'react-toastify';
 import { profiles } from '../Service/api';
+import Swal from 'sweetalert2';
 
 const schema = yup.object({
   name: yup.string().required('Nombre requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
