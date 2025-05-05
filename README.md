@@ -20,7 +20,6 @@ npm run dev
  
 ## ▶️ deploy
 
-https://frontnodo.onrender.com/catalog
-
+https://frontnodo.onrender.com/
 
 
