@@ -68,7 +68,17 @@ const ProfileManagement = () => {
   };
 
   const handleDelete = async (profileId) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este perfil?')) {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará el perfil permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+    });
+  
+    if (result.isConfirmed) {
       try {
         await profiles.delete(profileId);
         toast.success('Perfil eliminado correctamente');
