@@ -17,3 +17,10 @@ Este es el frontend de una aplicación de streaming de películas desarrollado c
 ```bash
 npm install
 npm run dev
+ 
+## ▶️ deploy
+
+https://frontnodo.onrender.com/catalog
+
+
+
