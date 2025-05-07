@@ -30,7 +30,7 @@ const ProfileManagement = () => {
 
   const loadProfiles = async () => {
     try {
-      const response = await profiles.getAll();
+      const response = await profiles.getMyprofile();
       setUserProfiles(response.data.data.profiles || []);
       if (response.data.data.profiles.length === 0) {
         toast.info('No profiles found. Please create a new one.');
