@@ -1,41 +1,55 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import jwt_decode from 'jwt-decode'; // Importación corregida
+import { createContext, useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [decodedToken, setDecodedToken] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const [currentProfile, setCurrentProfile] = useState(JSON.parse(localStorage.getItem('currentProfile')));
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     if (token) {
-      try {
-        const decoded = jwt_decode(token); // Usando jwt_decode en lugar de jwtDecode
-        setDecodedToken(decoded);
-      } catch (error) {
-        console.error('Token inválido o expirado');
-        setDecodedToken(null);
-      }
+      localStorage.setItem('token', token);
+    } else {
+      localStorage.removeItem('token');
     }
   }, [token]);
 
+  useEffect(() => {
+    if (currentProfile) {
+      localStorage.setItem('currentProfile', JSON.stringify(currentProfile));
+    } else {
+      localStorage.removeItem('currentProfile');
+    }
+  }, [currentProfile]);
+
+  const login = (newToken) => {
+    setToken(newToken);
+  };
+
+  const logout = () => {
+    setToken(null);
+    setCurrentProfile(null);
+    navigate("/");
+  };
+
   const selectProfile = (profile) => {
-    setProfile(profile);
+    setCurrentProfile(profile);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        token,
-        decodedToken,
-        profile,
-        selectProfile,
-      }}
-    >
+    <AuthContext.Provider value={{ token, login, logout, currentProfile, selectProfile }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+  }
+  return context;
+};
