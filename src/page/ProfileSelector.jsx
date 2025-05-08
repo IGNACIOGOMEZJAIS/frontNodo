@@ -15,7 +15,7 @@ const ProfileSelector = () => {
 
   const loadProfiles = async () => {
     try {
-      const response = await profiles.getAll();
+      const response = await profiles.getMyprofile();
       setUserProfiles(response.data.data.profiles);
     } catch (error) {
       toast.error('Error al cargar los perfiles');
