@@ -15,7 +15,7 @@ const ProfileSelector = () => {
 
   const loadProfiles = async () => {
     try {
-      const response = await profiles.getProfiles(); // nuevo endpoint unificado
+      const response = await profiles.getMyprofile(); // nuevo endpoint unificado
       const profilesData = response.data.data.profiles;
 
       setUserProfiles(profilesData);
