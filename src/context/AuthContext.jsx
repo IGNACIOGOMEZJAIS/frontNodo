@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import * as jwtDecode from 'jwt-decode';
+import jwt_decode from 'jwt-decode'; // Importación corregida
 
 const AuthContext = createContext();
 
@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (token) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwt_decode(token); // Usando jwt_decode en lugar de jwtDecode
         setDecodedToken(decoded);
       } catch (error) {
         console.error('Token inválido o expirado');
