@@ -17,12 +17,7 @@ const ProfileSelector = () => {
     try {
       const response = await profiles.getProfiles(); // nuevo endpoint unificado
       const profilesData = response.data.data.profiles;
-  
-      if (profilesData.length === 1) {
-        handleProfileSelect(profilesData[0]);
-        return;
-      }
-  
+
       setUserProfiles(profilesData);
     } catch (error) {
       toast.error('Error al cargar los perfiles');
