@@ -6,21 +6,28 @@ import * as yup from 'yup';
 import { toast } from 'react-toastify';
 import { profiles } from '../Service/api';
 import Swal from 'sweetalert2';
+import { TailSpin } from 'react-loader-spinner';
 
 const schema = yup.object({
   name: yup.string().required('Nombre requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
- 
 }).required();
-const type =['standard_profile', 'child_profile'];
-  
+
+const type = ['standard_profile', 'child_profile'];
 
 const ProfileManagement = () => {
   const navigate = useNavigate();
   const [userProfiles, setUserProfiles] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm({
     resolver: yupResolver(schema)
   });
 
@@ -32,11 +39,13 @@ const ProfileManagement = () => {
     try {
       const response = await profiles.getMyprofile();
       setUserProfiles(response.data.data.profiles || []);
-      if (response.data.data.profiles.length === 0) {
-        toast.info('No profiles found. Please create a new one.');
+      if (!response.data.data.profiles.length) {
+        toast.info('No se encontraron perfiles. Crea uno nuevo.');
       }
     } catch (error) {
-      toast.error('Failed to load profiles');
+      toast.error('No se pudieron cargar los perfiles.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,6 +62,7 @@ const ProfileManagement = () => {
   };
 
   const onSubmit = async (data) => {
+    setSubmitting(true);
     try {
       if (editingProfile) {
         await profiles.update(editingProfile._id, data);
@@ -64,7 +74,9 @@ const ProfileManagement = () => {
       handleCloseDialog();
       loadProfiles();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to save profile');
+      toast.error(error.response?.data?.message || 'Error al guardar el perfil');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -78,13 +90,13 @@ const ProfileManagement = () => {
       cancelButtonText: 'Cancelar',
       reverseButtons: true,
     });
-  
+
     if (result.isConfirmed) {
       try {
         await profiles.delete(profileId);
         toast.success('Perfil eliminado correctamente');
         loadProfiles();
-      } catch (error) {
+      } catch {
         toast.error('La eliminación del perfil falló');
       }
     }
@@ -92,121 +104,89 @@ const ProfileManagement = () => {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between mb-6">
+      <div className="flex justify-between items-center mb-6">
         <button
           className="flex items-center gap-2 text-blue-600 hover:underline"
           onClick={() => navigate('/profiles')}
         >
-          ← Volver a la selección de perfiles
+          ← Volver a perfiles
         </button>
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 shadow"
           onClick={() => handleOpenDialog()}
         >
           Crear nuevo perfil
         </button>
-
-
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {userProfiles.map((profile) => (
-          <div key={profile._id} className="border rounded shadow p-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">{profile.name}</h2>
-              <div className="flex gap-2">
-                <button onClick={() => handleOpenDialog(profile)} className="text-blue-600 hover:text-blue-800">
-                  ✎
-                </button>
-                <button onClick={() => handleDelete(profile._id)} className="text-red-600 hover:text-red-800">
-                  🗑
-                </button>
+      {loading ? (
+        <div className="flex justify-center items-center h-48">
+          <TailSpin height={50} width={50} color="#3b82f6" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {userProfiles.map((profile) => (
+            <div key={profile._id} className="bg-white border rounded-lg shadow p-4">
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-lg font-semibold">{profile.name}</h2>
+                <div className="flex gap-2">
+                  <button onClick={() => handleOpenDialog(profile)} className="text-blue-600 hover:text-blue-800">
+                    ✎
+                  </button>
+                  <button onClick={() => handleDelete(profile._id)} className="text-red-600 hover:text-red-800">
+                    🗑
+                  </button>
+                </div>
               </div>
+              <p className="text-gray-500 capitalize">{profile.type}</p>
             </div>
-            <p className="text-gray-600 capitalize">{profile.type}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {isDialogOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
             <h3 className="text-xl font-bold mb-4">
               {editingProfile ? 'Editar perfil' : 'Crear nuevo perfil'}
             </h3>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <div>
-                  <label className="block mb-1 font-medium">Usuario</label>
-                  <input
-                    className={`w-full border p-2 rounded ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
-                    {...register('username')}
-                  />
-                  {errors.username && (
-                    <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block mb-1 font-medium">Email</label>
-                  <input
-                    className={`w-full border p-2 rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
-                    type="email"
-                    {...register('email')}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block mb-1 font-medium">Contraseña</label>
-                  <input
-                    className={`w-full border p-2 rounded ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
-                    type="password"
-                    {...register('password')}
-                  />
-                  {errors.password && (
-                    <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-                  )}
-                </div>
                 <label className="block mb-1 font-medium">Nombre</label>
                 <input
                   className={`w-full border p-2 rounded ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('name')}
                 />
-                {errors.name && (
-                  <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-                )}
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
               </div>
+
               <div>
                 <label className="block mb-1 font-medium">Tipo de usuario</label>
                 <select
-                  className={`w-full border p-2 rounded ${errors.type ? 'border-red-500' : 'border-gray-300'}`}
-                  {...register('roleName')}
+                  className="w-full border p-2 rounded"
+                  {...register('type')}
                 >
                   <option value="">Selecciona un tipo</option>
-            {type.map((type) => (
-              <option key={type} value={type}>{type}</option>
-            ))}
+                  {type.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
                 </select>
-                {errors.type && (
-                  <p className="text-red-500 text-sm mt-1">{errors.type.message}</p>
-                )}
               </div>
-              <div className="flex justify-end gap-2 mt-4">
+
+              <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={handleCloseDialog}
                   className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                  className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center"
+                  disabled={submitting}
                 >
-                  {editingProfile ? 'Update' : 'Create'}
+                  {submitting ? <TailSpin height={20} width={20} color="white" /> : editingProfile ? 'Actualizar' : 'Crear'}
                 </button>
               </div>
             </form>
