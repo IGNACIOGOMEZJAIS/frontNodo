@@ -1,55 +1,41 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { createContext, useContext, useEffect, useState } from 'react';
+import jwtDecode from 'jwt-decode';
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [currentProfile, setCurrentProfile] = useState(JSON.parse(localStorage.getItem('currentProfile')));
-  const navigate = useNavigate();
-
+  const [decodedToken, setDecodedToken] = useState(null);
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
+      try {
+        const decoded = jwtDecode(token);
+        setDecodedToken(decoded);
+      } catch (error) {
+        console.error('Token inválido o expirado');
+        setDecodedToken(null);
+      }
     }
   }, [token]);
 
-  useEffect(() => {
-    if (currentProfile) {
-      localStorage.setItem('currentProfile', JSON.stringify(currentProfile));
-    } else {
-      localStorage.removeItem('currentProfile');
-    }
-  }, [currentProfile]);
-
-  const login = (newToken) => {
-    setToken(newToken);
-  };
-
-  const logout = () => {
-    setToken(null);
-    setCurrentProfile(null);
-    navigate("/");
-  };
-
   const selectProfile = (profile) => {
-    setCurrentProfile(profile);
+    setProfile(profile);
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout, currentProfile, selectProfile }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        decodedToken,
+        profile,
+        selectProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
