@@ -18,10 +18,7 @@ const ProfileSelector = () => {
       const response = await profiles.getMyprofile(); // nuevo endpoint unificado
       const profilesData = response.data.data.profiles;
 
-      if (profilesData.length === 1) {
-        handleProfileSelect(profilesData[0]);
-        return;
-      }
+   =
 
       setUserProfiles(profilesData);
     } catch (error) {
