@@ -1,3 +1,4 @@
+// pages/Login.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -6,62 +7,73 @@ import * as yup from 'yup';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../Service/api';
+import ClipLoader from 'react-spinners/ClipLoader';   //  npm i react-spinners
 
-const schema = yup.object({
-  email: yup.string().email('Formato de correo inválido').required('El correo es obligatorio'),
-  password: yup.string().required('La contraseña es obligatoria'),
-  username: yup.string().when('isRegistering', {
-    is: true,
-    then: () => yup.string().required('El nombre de usuario es obligatorio'),
-  }),
-}).required();
+const schema = yup
+  .object({
+    email: yup
+      .string()
+      .email('Formato de correo inválido')
+      .required('El correo es obligatorio'),
+    password: yup.string().required('La contraseña es obligatoria'),
+    username: yup.string().when('isRegistering', {
+      is: true,
+      then: () => yup.string().required('El nombre de usuario es obligatorio'),
+    }),
+  })
+  .required();
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+
   const [error, setError] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
-    context: { isRegistering }
+    context: { isRegistering },
   });
 
   const onSubmit = async (data) => {
-    try {
-      setError('');
-      let response;
+    setError('');
+    setLoading(true);
 
+    try {
       if (isRegistering) {
-        const registerData = {
-          ...data,
-          role: 'account_owner'
-        };
-        response = await auth.register(registerData);
+        const registerData = { ...data, role: 'account_owner' };
+        await auth.register(registerData);
+
         toast.success('¡Registro exitoso! Por favor inicia sesión.');
         setIsRegistering(false);
         reset();
-        return;
       } else {
-        response = await auth.login(data);
+        // ---- Login ----
+        const response = await auth.login(data);
         login(response.data.token);
+
         toast.success('¡Inicio de sesión exitoso!');
         navigate('/profiles');
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Ocurrió un error';
-      setError(errorMessage);
-      toast.error(errorMessage);
+      const msg =
+        err.response?.data?.message || err.message || 'Ocurrió un error';
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   const toggleMode = () => {
-    setIsRegistering(!isRegistering);
+    if (loading) return;         // evita cambiar de modo mientras carga
+    setIsRegistering((prev) => !prev);
     setError('');
     reset();
   };
@@ -91,7 +103,9 @@ const Login = () => {
                 }`}
               />
               {errors.username && (
-                <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.username.message}
+                </p>
               )}
             </div>
           )}
@@ -106,7 +120,9 @@ const Login = () => {
               }`}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -120,21 +136,34 @@ const Login = () => {
               }`}
             />
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
           <div className="space-y-2 pt-4">
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition flex items-center justify-center gap-2"
             >
-              {isRegistering ? 'Registrarse' : 'Iniciar Sesión'}
+              {loading ? (
+                <>
+                  <ClipLoader size={20} color="#ffffff" />
+                  <span>Cargando…</span>
+                </>
+              ) : isRegistering ? (
+                'Registrarse'
+              ) : (
+                'Iniciar Sesión'
+              )}
             </button>
 
             <button
               type="button"
               onClick={toggleMode}
+              disabled={loading}
               className="w-full text-blue-600 hover:underline text-sm"
             >
               {isRegistering
