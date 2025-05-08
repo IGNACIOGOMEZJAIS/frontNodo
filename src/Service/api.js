@@ -34,7 +34,7 @@ export const auth = {
 };
 
 export const profiles = {
-  getMyprofile: () => api.get('/getmyprofiles'),
+  getMyprofile: () => api.get('profiles/getmyprofiles'),
   getAll: () => api.get('/profiles'),
   create: (profileData) => api.post('/auth/create-profile', profileData),
   update: (id, profileData) => api.patch(`/profiles/${id}`, profileData),
