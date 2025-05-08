@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { profiles } from '../Service/api';
-import { TailSpin } from 'react-loader-spinner';
 
 const ProfileSelector = () => {
   const [userProfiles, setUserProfiles] = useState([]);
@@ -56,7 +55,7 @@ const ProfileSelector = () => {
 
       {loading ? (
         <div className="flex justify-center items-center h-60">
-          <TailSpin height={50} width={50} color="#3b82f6" />
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">

@@ -6,7 +6,6 @@ import * as yup from 'yup';
 import { toast } from 'react-toastify';
 import { profiles } from '../Service/api';
 import Swal from 'sweetalert2';
-import { TailSpin } from 'react-loader-spinner';
 
 const schema = yup.object({
   name: yup.string().required('Nombre requerido').min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -121,7 +120,7 @@ const ProfileManagement = () => {
 
       {loading ? (
         <div className="flex justify-center items-center h-48">
-          <TailSpin height={50} width={50} color="#3b82f6" />
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -186,7 +185,9 @@ const ProfileManagement = () => {
                   className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center"
                   disabled={submitting}
                 >
-                  {submitting ? <TailSpin height={20} width={20} color="white" /> : editingProfile ? 'Actualizar' : 'Crear'}
+                  {submitting ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : editingProfile ? 'Actualizar' : 'Crear'}
                 </button>
               </div>
             </form>
