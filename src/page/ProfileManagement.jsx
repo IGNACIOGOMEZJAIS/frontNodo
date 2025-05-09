@@ -49,7 +49,26 @@ const ProfileManagement = () => {
 
   const handleOpenDialog = (profile = null) => {
     setEditingProfile(profile);
-    reset(profile || { name: '', type: 'standard_profile' });
+  
+    if (profile) {
+      // Asegura que todos los campos estén definidos
+      reset({
+        name: profile.name || '',
+        email: profile.email || '',
+        username: profile.username || '',
+        password: '', // Por seguridad no se debería precargar
+        type: profile.type || 'standard_profile',
+      });
+    } else {
+      reset({
+        name: '',
+        email: '',
+        username: '',
+        password: '',
+        type: 'standard_profile',
+      });
+    }
+  
     setIsDialogOpen(true);
   };
 
