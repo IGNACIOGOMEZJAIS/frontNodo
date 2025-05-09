@@ -51,12 +51,12 @@ const ProfileManagement = () => {
     setEditingProfile(profile);
   
     if (profile) {
-      // Asegura que todos los campos estén definidos
+    
       reset({
         name: profile.name || '',
         email: profile.email || '',
         username: profile.username || '',
-        password: '', // Por seguridad no se debería precargar
+        password: '',
         type: profile.type || 'standard_profile',
       });
     } else {
@@ -65,7 +65,7 @@ const ProfileManagement = () => {
         email: '',
         username: '',
         password: '',
-        type: 'standard_profile',
+        type: 'standard',
       });
     }
   
