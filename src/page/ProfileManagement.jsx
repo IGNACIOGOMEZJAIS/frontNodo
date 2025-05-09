@@ -49,9 +49,9 @@ const ProfileManagement = () => {
 
   const handleOpenDialog = (profile = null) => {
     setEditingProfile(profile);
-  
+
     if (profile) {
-    
+
       reset({
         name: profile.name || '',
         email: profile.email || '',
@@ -68,7 +68,7 @@ const ProfileManagement = () => {
         type: 'standard',
       });
     }
-  
+
     setIsDialogOpen(true);
   };
 
@@ -174,8 +174,9 @@ const ProfileManagement = () => {
               <div>
                 <label className="block mb-1 font-medium">Email</label>
                 <input
-                  className={`w-full border p-2 rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full border p-2 rounded ${errors.email ? 'border-red-500' : 'border-gray-300'} ${editingProfile ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                   type="email"
+                  disabled={!!editingProfile}
                   {...register('email')}
                 />
                 {errors.email && (
