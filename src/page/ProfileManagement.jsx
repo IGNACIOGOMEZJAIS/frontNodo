@@ -49,9 +49,9 @@ const ProfileManagement = () => {
 
   const handleOpenDialog = (profile = null) => {
     setEditingProfile(profile);
-
+  
     if (profile) {
-
+    
       reset({
         name: profile.name || '',
         email: profile.email || '',
@@ -68,7 +68,7 @@ const ProfileManagement = () => {
         type: 'standard',
       });
     }
-
+  
     setIsDialogOpen(true);
   };
 
@@ -170,13 +170,13 @@ const ProfileManagement = () => {
             <h3 className="text-xl font-bold mb-4">
               {editingProfile ? 'Editar perfil' : 'Crear nuevo perfil'}
             </h3>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 "autoComplete="off">
               <div>
                 <label className="block mb-1 font-medium">Email</label>
                 <input
-                  className={`w-full border p-2 rounded ${errors.email ? 'border-red-500' : 'border-gray-300'} ${editingProfile ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  className={`w-full border p-2 rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                   type="email"
-                  disabled={!!editingProfile}
+                  
                   {...register('email')}
                 />
                 {errors.email && (
@@ -187,6 +187,7 @@ const ProfileManagement = () => {
               <div>
                 <label className="block mb-1 font-medium">Usuario</label>
                 <input
+                autoComplete="off"
                   className={`w-full border p-2 rounded ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('username')}
                 />
@@ -198,6 +199,7 @@ const ProfileManagement = () => {
               <div>
                 <label className="block mb-1 font-medium">Contraseña</label>
                 <input
+                autoComplete="off"
                   className={`w-full border p-2 rounded ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
                   type="password"
                   {...register('password')}
