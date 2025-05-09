@@ -13,13 +13,9 @@ const schema = yup.object({
   email: yup.string().email('Email inválido').required('Email requerido'),
   username: yup.string().required('Usuario requerido'),
   password: yup.string().required('Contraseña requerida'),
-  role: yup.string().required('Rol requerido'),
 }).required();
 
-const roleOptions = [
-  { value: '64f3a9e59f623c73ec25a0b7', label: 'Administrador' },
-  { value: '64f3a9e59f623c73ec25a0b8', label: 'Usuario' },
-];
+const type = ['standard_profile', 'child_profile'];
 
 const ProfileManagement = () => {
   const navigate = useNavigate();
@@ -53,14 +49,15 @@ const ProfileManagement = () => {
 
   const handleOpenDialog = (profile = null) => {
     setEditingProfile(profile);
-
+  
     if (profile) {
+    
       reset({
         name: profile.name || '',
         email: profile.email || '',
         username: profile.username || '',
         password: '',
-        role: profile.role || '',
+        type: profile.type || 'standard_profile',
       });
     } else {
       reset({
@@ -68,10 +65,10 @@ const ProfileManagement = () => {
         email: '',
         username: '',
         password: '',
-        role: '',
+        type: 'standard',
       });
     }
-
+  
     setIsDialogOpen(true);
   };
 
@@ -161,7 +158,7 @@ const ProfileManagement = () => {
                   </button>
                 </div>
               </div>
-              <p className="text-gray-600 capitalize">{profile.role}</p>
+              <p className="text-gray-600 capitalize">{profile.type}</p>
             </div>
           ))}
         </div>
@@ -173,36 +170,41 @@ const ProfileManagement = () => {
             <h3 className="text-xl font-bold mb-4">
               {editingProfile ? 'Editar perfil' : 'Crear nuevo perfil'}
             </h3>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" autoComplete="off">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 "autoComplete="off">
               <div>
                 <label className="block mb-1 font-medium">Email</label>
                 <input
                   className={`w-full border p-2 rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                   type="email"
+                  
                   {...register('email')}
                 />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                )}
               </div>
 
               <div>
                 <label className="block mb-1 font-medium">Usuario</label>
                 <input
-                  autoComplete="off"
                   className={`w-full border p-2 rounded ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('username')}
                 />
-                {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>}
+                {errors.username && (
+                  <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+                )}
               </div>
 
               <div>
                 <label className="block mb-1 font-medium">Contraseña</label>
                 <input
-                  autoComplete="off"
-                  type="password"
                   className={`w-full border p-2 rounded ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                  type="password"
                   {...register('password')}
                 />
-                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                )}
               </div>
 
               <div>
@@ -211,30 +213,41 @@ const ProfileManagement = () => {
                   className={`w-full border p-2 rounded ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('name')}
                 />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                )}
               </div>
 
               <div>
-                <label className="block mb-1 font-medium">Rol</label>
+                <label className="block mb-1 font-medium">Tipo de usuario</label>
                 <select
-                  className={`w-full border p-2 rounded ${errors.role ? 'border-red-500' : 'border-gray-300'}`}
-                  {...register('role')}
+                  name="type"
+                  autoComplete='off'
+                  className={`w-full border p-2 rounded ${errors.type ? 'border-red-500' : 'border-gray-300'}`}
+                  {...register('type')}
                 >
-                  <option value="">Selecciona un rol</option>
-                  {roleOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
+                  <option value="">Selecciona un tipo</option>
+                  {type.map((type) => (
+                    <option key={type} value={type}>{type}</option>
                   ))}
                 </select>
-                {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>}
+                {errors.type && (
+                  <p className="text-red-500 text-sm mt-1">{errors.type.message}</p>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 mt-4">
-                <button type="button" onClick={handleCloseDialog} className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100">
+                <button
+                  type="button"
+                  onClick={handleCloseDialog}
+                  className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
+                >
                   Cancelar
                 </button>
-                <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                >
                   {editingProfile ? 'Actualizar' : 'Crear'}
                 </button>
               </div>
