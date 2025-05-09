@@ -15,7 +15,7 @@ const schema = yup.object({
   password: yup.string().required('Contraseña requerida'),
 }).required();
 
-const type = ['standard', 'child'];
+const type = ['standard_profile', 'child_profile'];
 
 const ProfileManagement = () => {
   const navigate = useNavigate();
