@@ -57,7 +57,7 @@ const ProfileManagement = () => {
         email: profile.email || '',
         username: profile.username || '',
         password: '',
-        type: profile.type || 'standard_profile',
+        type: profile.type || 'standard',
       });
     } else {
       reset({
