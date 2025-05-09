@@ -13,10 +13,14 @@ const schema = yup.object({
   email: yup.string().email('Email inválido').required('Email requerido'),
   username: yup.string().required('Usuario requerido'),
   password: yup.string().required('Contraseña requerida'),
+  role: yup.string().required('Rol requerido'),
+
 }).required();
 
-const type = ['standard_profile', 'child_profile'];
-
+const roleOptions = [
+  { value: '64f3a9e59f623c73ec25a0b7', label: 'Administrador' },
+  { value: '64f3a9e59f623c73ec25a0b8', label: 'Usuario' },
+];
 const ProfileManagement = () => {
   const navigate = useNavigate();
   const [userProfiles, setUserProfiles] = useState([]);
@@ -49,9 +53,9 @@ const ProfileManagement = () => {
 
   const handleOpenDialog = (profile = null) => {
     setEditingProfile(profile);
-  
+
     if (profile) {
-    
+
       reset({
         name: profile.name || '',
         email: profile.email || '',
@@ -68,7 +72,7 @@ const ProfileManagement = () => {
         type: 'standard',
       });
     }
-  
+
     setIsDialogOpen(true);
   };
 
@@ -170,13 +174,13 @@ const ProfileManagement = () => {
             <h3 className="text-xl font-bold mb-4">
               {editingProfile ? 'Editar perfil' : 'Crear nuevo perfil'}
             </h3>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 "autoComplete="off">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 " autoComplete="off">
               <div>
                 <label className="block mb-1 font-medium">Email</label>
                 <input
                   className={`w-full border p-2 rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                   type="email"
-                  
+
                   {...register('email')}
                 />
                 {errors.email && (
@@ -187,7 +191,7 @@ const ProfileManagement = () => {
               <div>
                 <label className="block mb-1 font-medium">Usuario</label>
                 <input
-                autoComplete="off"
+                  autoComplete="off"
                   className={`w-full border p-2 rounded ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('username')}
                 />
@@ -199,7 +203,7 @@ const ProfileManagement = () => {
               <div>
                 <label className="block mb-1 font-medium">Contraseña</label>
                 <input
-                autoComplete="off"
+                  autoComplete="off"
                   className={`w-full border p-2 rounded ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
                   type="password"
                   {...register('password')}
@@ -221,18 +225,20 @@ const ProfileManagement = () => {
               </div>
 
               <div>
-                <label className="block mb-1 font-medium">Tipo de usuario</label>
+                <label className="block mb-1 font-medium">Rol</label>
                 <select
-                  className={`w-full border p-2 rounded ${errors.type ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full border p-2 rounded ${errors.role ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('type')}
                 >
-                  <option value="">Selecciona un tipo</option>
-                  {type.map((type) => (
-                    <option key={type} value={type}>{type}</option>
+                  <option value="">Selecciona un rol</option>
+                  {roleOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
-                {errors.type && (
-                  <p className="text-red-500 text-sm mt-1">{errors.type.message}</p>
+                {errors.role && (
+                  <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
                 )}
               </div>
 
