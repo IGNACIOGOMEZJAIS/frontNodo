@@ -13,9 +13,11 @@ const schema = yup.object({
   email: yup.string().email('Email inválido').required('Email requerido'),
   username: yup.string().required('Usuario requerido'),
   password: yup.string().required('Contraseña requerida'),
+  type: yup.string().required('Tipo requerido'),
 }).required();
 
-const type = ['standard_profile', 'child_profile'];
+const typeCreate = ['standard_profile', 'child_profile'];
+const typeEdit = ['standard', 'child'];
 
 const ProfileManagement = () => {
   const navigate = useNavigate();
@@ -49,9 +51,7 @@ const ProfileManagement = () => {
 
   const handleOpenDialog = (profile = null) => {
     setEditingProfile(profile);
-  
     if (profile) {
-    
       reset({
         name: profile.name || '',
         email: profile.email || '',
@@ -65,10 +65,9 @@ const ProfileManagement = () => {
         email: '',
         username: '',
         password: '',
-        type: 'standard',
+        type: 'standard_profile',
       });
     }
-  
     setIsDialogOpen(true);
   };
 
@@ -170,18 +169,15 @@ const ProfileManagement = () => {
             <h3 className="text-xl font-bold mb-4">
               {editingProfile ? 'Editar perfil' : 'Crear nuevo perfil'}
             </h3>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 "autoComplete="off">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" autoComplete="off">
               <div>
                 <label className="block mb-1 font-medium">Email</label>
                 <input
                   className={`w-full border p-2 rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                   type="email"
-                  
                   {...register('email')}
                 />
-                {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-                )}
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
               </div>
 
               <div>
@@ -190,9 +186,7 @@ const ProfileManagement = () => {
                   className={`w-full border p-2 rounded ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('username')}
                 />
-                {errors.username && (
-                  <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
-                )}
+                {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>}
               </div>
 
               <div>
@@ -202,9 +196,7 @@ const ProfileManagement = () => {
                   type="password"
                   {...register('password')}
                 />
-                {errors.password && (
-                  <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-                )}
+                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
               </div>
 
               <div>
@@ -213,27 +205,23 @@ const ProfileManagement = () => {
                   className={`w-full border p-2 rounded ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('name')}
                 />
-                {errors.name && (
-                  <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-                )}
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
               </div>
 
               <div>
                 <label className="block mb-1 font-medium">Tipo de usuario</label>
                 <select
-                  name="type"
-                  autoComplete='off'
                   className={`w-full border p-2 rounded ${errors.type ? 'border-red-500' : 'border-gray-300'}`}
                   {...register('type')}
                 >
                   <option value="">Selecciona un tipo</option>
-                  {type.map((type) => (
-                    <option key={type} value={type}>{type}</option>
+                  {(editingProfile ? typeEdit : typeCreate).map((typeOption) => (
+                    <option key={typeOption} value={typeOption}>
+                      {typeOption}
+                    </option>
                   ))}
                 </select>
-                {errors.type && (
-                  <p className="text-red-500 text-sm mt-1">{errors.type.message}</p>
-                )}
+                {errors.type && <p className="text-red-500 text-sm mt-1">{errors.type.message}</p>}
               </div>
 
               <div className="flex justify-end gap-2 mt-4">
