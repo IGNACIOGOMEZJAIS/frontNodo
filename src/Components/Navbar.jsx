@@ -28,7 +28,7 @@ const Navbar = () => {
   }
 
 
-  
+
   const isAdmin = userRole === ADMIN_ROLE_ID;
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -88,8 +88,8 @@ const Navbar = () => {
             ) : error ? (
               <span>{error}</span>
             ) : weather?.current_weather ? (
-              <span>Ideal para una peli!
-                {weather.current_weather.temperature}°C - {weather.current_weather.windspeed} km/h
+              <span className="inline-block bg-blue-100 text-black font-semibold px-4 py-2 rounded-lg shadow-sm transition-all duration-200 hover:bg-blue-200">
+                🎬 Ideal para una peli! {weather.current_weather.temperature}°C - {weather.current_weather.windspeed} km/h 💨
               </span>
             ) : (
               <span>Clima no disponible</span>
