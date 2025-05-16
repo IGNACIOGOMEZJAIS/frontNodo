@@ -46,7 +46,7 @@ const MovieCatalog = () => {
   const filterMovies = list =>
     list.filter(movie => {
       const genre = (movie.genre || '').trim().toLowerCase();
-      if (!isAdult && ['acción', 'romance', 'terror'].includes(genre)) return false;
+      if (!isAdult && ['acción', 'romance', 'terror','comedia'].includes(genre)) return false;
       const matchesSearch = movie.title?.toLowerCase().includes(search.toLowerCase());
       const matchesGenre = genreFilter
         ? genre === genreFilter.trim().toLowerCase()
