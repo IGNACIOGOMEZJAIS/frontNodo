@@ -25,13 +25,17 @@ const MovieCatalog = () => {
     loadMovies();
   }, []);
 
-  useEffect(() => {
-    if (currentProfile) {
-      const filtered = filterMovies(movieList);
-      setTotalPages(Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE)));
-      setPage(prev => Math.min(prev, totalPages));
-    }
-  }, [movieList, search, genreFilter, currentProfile, totalPages]);
+ useEffect(() => {
+  if (currentProfile) {
+    const filtered = filterMovies(movieList);
+    setTotalPages(Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE)));
+  }
+}, [movieList, search, genreFilter, currentProfile]);
+
+useEffect(() => {
+  // Evitar que la página esté fuera de rango
+  setPage(prev => Math.min(prev, totalPages));
+}, [totalPages]);
 
   const loadMovies = async () => {
     try {
