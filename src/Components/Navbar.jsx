@@ -88,7 +88,7 @@ const Navbar = () => {
             ) : error ? (
               <span>{error}</span>
             ) : weather?.current_weather ? (
-              <span>
+              <span>Ideal para una peli!
                 {weather.current_weather.temperature}°C - {weather.current_weather.windspeed} km/h
               </span>
             ) : (
