@@ -81,11 +81,14 @@ useEffect(() => {
     }
   };
 
-  const filteredMovies = filterMovies(movieList);
-  const paginatedMovies = filteredMovies.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
+const filteredMovies = filterMovies(movieList);
+const totalFilteredPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE));
+const currentPage = Math.min(page, totalFilteredPages); 
+
+const paginatedMovies = filteredMovies.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+);
 
   return (
     <div className="p-8 bg-gradient-to-br from-white to-gray-100 min-h-screen">
@@ -167,21 +170,25 @@ useEffect(() => {
         })}
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-6 mt-10">
-          <button
-            onClick={() => setPage(p => Math.max(p - 1, 1))}
-            disabled={page === 1}
-            className="px-5 py-2 bg-white border-2 border-gray-200 rounded-full hover:border-indigo-500 transition"
-          >Anterior</button>
-          <span className="text-lg font-bold">{page} / {totalPages}</span>
-          <button
-            onClick={() => setPage(p => Math.min(p + 1, totalPages))}
-            disabled={page === totalPages}
-            className="px-5 py-2 bg-white border-2 border-gray-200 rounded-full hover:border-indigo-500 transition"
-          >Siguiente</button>
-        </div>
-      )}
+    {totalFilteredPages > 1 && (
+  <div className="flex justify-center items-center gap-6 mt-10">
+    <button
+      onClick={() => setPage(p => Math.max(p - 1, 1))}
+      disabled={currentPage === 1}
+      className="px-5 py-2 bg-white border-2 border-gray-200 rounded-full hover:border-indigo-500 transition"
+    >
+      Anterior
+    </button>
+    <span className="text-lg font-bold">{currentPage} / {totalFilteredPages}</span>
+    <button
+      onClick={() => setPage(p => Math.min(p + 1, totalFilteredPages))}
+      disabled={currentPage === totalFilteredPages}
+      className="px-5 py-2 bg-white border-2 border-gray-200 rounded-full hover:border-indigo-500 transition"
+    >
+      Siguiente
+    </button>
+  </div>
+)}
     </div>
   );
 };
