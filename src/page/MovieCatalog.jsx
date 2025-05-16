@@ -25,17 +25,17 @@ const MovieCatalog = () => {
     loadMovies();
   }, []);
 
- useEffect(() => {
-  if (currentProfile) {
-    const filtered = filterMovies(movieList);
-    setTotalPages(Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE)));
-  }
-}, [movieList, search, genreFilter, currentProfile]);
+  useEffect(() => {
+    if (currentProfile) {
+      const filtered = filterMovies(movieList);
+      setTotalPages(Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE)));
+    }
+  }, [movieList, search, genreFilter, currentProfile]);
 
-useEffect(() => {
-  // Evitar que la página esté fuera de rango
-  setPage(prev => Math.min(prev, totalPages));
-}, [totalPages]);
+  useEffect(() => {
+    // Evitar que la página esté fuera de rango
+    setPage(prev => Math.min(prev, totalPages));
+  }, [totalPages]);
 
   const loadMovies = async () => {
     try {
@@ -50,7 +50,7 @@ useEffect(() => {
   const filterMovies = list =>
     list.filter(movie => {
       const genre = (movie.genre || '').trim().toLowerCase();
-      if (!isAdult && ['acción', 'romance', 'terror','comedia'].includes(genre)) return false;
+      if (!isAdult && ['acción', 'romance', 'terror', 'comedia'].includes(genre)) return false;
       const matchesSearch = movie.title?.toLowerCase().includes(search.toLowerCase());
       const matchesGenre = genreFilter
         ? genre === genreFilter.trim().toLowerCase()
@@ -58,18 +58,26 @@ useEffect(() => {
       return matchesSearch && matchesGenre;
     });
 
-  const handleSearchChange = e => { setSearch(e.target.value); setPage(1); };
-  const handleGenreChange = e => { setGenreFilter(e.target.value); setPage(1); };
+  const handleSearchChange = e => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+
+  const handleGenreChange = e => {
+    setGenreFilter(e.target.value);
+    setPage(1);
+  };
 
   const onRemoveFilm = async id => {
     const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Esta acción eliminará la película.",
-      icon: "warning",
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará la película.',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar"
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
     });
+
     if (result.isConfirmed) {
       try {
         await movies.delete(id);
@@ -81,19 +89,22 @@ useEffect(() => {
     }
   };
 
-const filteredMovies = filterMovies(movieList);
-const totalFilteredPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE));
-const currentPage = Math.min(page, totalFilteredPages); 
+  const filteredMovies = filterMovies(movieList);
+  const totalFilteredPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE));
+  const currentPage = Math.min(page, totalFilteredPages);
 
-const paginatedMovies = filteredMovies.slice(
-  (currentPage - 1) * ITEMS_PER_PAGE,
-  currentPage * ITEMS_PER_PAGE
-);
+  const paginatedMovies = filteredMovies.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="p-8 bg-gradient-to-br from-white to-gray-100 min-h-screen">
       <button
-        onClick={() => { removeProfile(); navigate('/profiles'); }}
+        onClick={() => {
+          removeProfile();
+          navigate('/profiles');
+        }}
         className="mb-6 text-indigo-600 hover:text-indigo-800 font-bold"
       >
         ← Volver a perfiles
@@ -128,10 +139,15 @@ const paginatedMovies = filteredMovies.slice(
         {paginatedMovies.map(movie => {
           const rating = Math.round(movie.rating || 0);
           const stars = Array.from({ length: 5 }, (_, i) => (
-            <span key={i} className={i < rating ? 'text-yellow-400' : 'text-gray-300'}>★</span>
+            <span key={i} className={i < rating ? 'text-yellow-400' : 'text-gray-300'}>
+              ★
+            </span>
           ));
           return (
-            <div key={movie.title} className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition">
+            <div
+              key={movie.title}
+              className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition"
+            >
               <div className="h-64 bg-gray-50 flex items-center justify-center">
                 <img
                   src={movie.posterUrl}
@@ -143,18 +159,24 @@ const paginatedMovies = filteredMovies.slice(
               <div className="p-6 flex flex-col h-72">
                 <h3 className="text-xl font-extrabold truncate mb-2">{movie.title}</h3>
                 <div className="flex items-center mb-3">{stars}</div>
-                <p className="text-gray-600 text-sm flex-1 mb-4 overflow-ellipsis line-clamp-3">{movie.description}</p>
+                <p className="text-gray-600 text-sm flex-1 mb-4 overflow-ellipsis line-clamp-3">
+                  {movie.description}
+                </p>
                 <div className="flex gap-3">
                   {isOwner && (
                     <>
                       <button
                         onClick={() => onRemoveFilm(movie._id)}
                         className="flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition"
-                      >Eliminar</button>
+                      >
+                        Eliminar
+                      </button>
                       <Link
                         to={`/edit-movie/${movie._id}`}
                         className="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-center transition"
-                      >Editar</Link>
+                      >
+                        Editar
+                      </Link>
                     </>
                   )}
                   <button
@@ -170,25 +192,27 @@ const paginatedMovies = filteredMovies.slice(
         })}
       </div>
 
-    {totalFilteredPages > 1 && (
-  <div className="flex justify-center items-center gap-6 mt-10">
-    <button
-      onClick={() => setPage(p => Math.max(p - 1, 1))}
-      disabled={currentPage === 1}
-      className="px-5 py-2 bg-white border-2 border-gray-200 rounded-full hover:border-indigo-500 transition"
-    >
-      Anterior
-    </button>
-    <span className="text-lg font-bold">{currentPage} / {totalFilteredPages}</span>
-    <button
-      onClick={() => setPage(p => Math.min(p + 1, totalFilteredPages))}
-      disabled={currentPage === totalFilteredPages}
-      className="px-5 py-2 bg-white border-2 border-gray-200 rounded-full hover:border-indigo-500 transition"
-    >
-      Siguiente
-    </button>
-  </div>
-)}
+      {totalFilteredPages > 1 && (
+        <div className="flex justify-center items-center gap-6 mt-10">
+          <button
+            onClick={() => setPage(p => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-5 py-2 bg-white border-2 border-gray-200 rounded-full hover:border-indigo-500 transition"
+          >
+            Anterior
+          </button>
+          <span className="text-lg font-bold">
+            {currentPage} / {totalFilteredPages}
+          </span>
+          <button
+            onClick={() => setPage(p => Math.min(p + 1, totalFilteredPages))}
+            disabled={currentPage === totalFilteredPages}
+            className="px-5 py-2 bg-white border-2 border-gray-200 rounded-full hover:border-indigo-500 transition"
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
     </div>
   );
 };
